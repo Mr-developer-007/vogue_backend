@@ -155,12 +155,12 @@ const key = "category";
 
 const data =  await redisClient.get(key)
 
-if(data){
-  return   res.status(200).json({
-      success: true,
-      data:JSON.parse(data),
-    });
-}
+// if(data){
+//   return   res.status(200).json({
+//       success: true,
+//       data:JSON.parse(data),
+//     });
+// }
 
 
 
