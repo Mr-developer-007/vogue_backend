@@ -19,9 +19,11 @@ import path from "path";
 import { connectRedis } from "./helpers/redisConfig.ts";
 dotenv.config()
 
+
+
 const app = express()
 app.use(cors({
-    origin:[process.env.FRONTEND_URL as string ],
+    origin:process.env.FRONTEND_URL?.split(","),
     methods: ["GET", "POST", "PUT", "DELETE","PATCH"],
     credentials:true
 }))
