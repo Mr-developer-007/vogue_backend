@@ -345,3 +345,33 @@ export const UpdateTrackingNumber = async(req:AuthRequest, res: Response)=>{
     });
   }
 }
+
+
+export const deleteOrder = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findByIdAndDelete(id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Order deleted successfully",
+    
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
