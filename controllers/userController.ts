@@ -5,6 +5,11 @@ import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 import Otp from "../models/verifyuserModel.ts";
 import { sendMail } from "../helpers/sendMail.ts";
+import Address from "../models/addressModel.ts";
+import Cart from "../models/cartModel.ts";
+import Order from "../models/orderModel.ts";
+import Wishlist from "../models/wishlistModel.ts";
+import mongoose from "mongoose";
 
 
 interface AuthRequest extends Request{
@@ -137,7 +142,70 @@ try {
 }
 }
 
+export const getAlluser = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find({role:"user"}).select("-password");
 
+    return res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch users",
+    });
+  }
+};
+
+export const getSingleUser = async (req: Request, res: Response) => {
+  try {
+    const { id  } = req.params;
+
+    const user = await User.findById(id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const addresses = await Address.find({ user: id});
+
+    const cart = await Cart.findOne({ user: id })
+      .populate("items.product");
+
+    const orders = await Order.find({ user: id })
+      .populate("address orderItems.product");
+
+    const wishlist = await Wishlist.findOne({ user: id })
+      .populate("items.product"); // ✅ fixed
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        user,
+        addresses,
+        cart,
+        orders,
+        wishlist,
+      },
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch user data",
+    });
+  }
+};
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -415,5 +483,27 @@ try {
     }) 
 }
 }
+export const logoutUser = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("user_token", {
+      httpOnly: true,
+      secure:true,        // true in production (HTTPS)
+      sameSite: "none",    // important for cross-domain (frontend ↔ API)
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Logout failed",
+    });
+  }
+};
 
 
