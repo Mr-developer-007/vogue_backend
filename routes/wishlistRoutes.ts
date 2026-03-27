@@ -4,8 +4,8 @@ import { getWishlist, removeFromWishList } from "../controllers/wishlistControll
 
 const route = express.Router()
 
-route.get("/get",verifyUser,getWishlist)
-route.put("/remove/:id",verifyUser,removeFromWishList)
+route.post("/get",getWishlist)
+
 
 
 export default route;

@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
 import Wishlist from "../models/wishlistModel.ts";
+import mongoose from "mongoose";
+import Product from "../models/productModel.ts";
 
 interface AuthRequest extends Request{
       user?: any
@@ -17,20 +19,23 @@ try {
 
 export const getWishlist = async (req: AuthRequest, res: Response) => {
   try {
-    const user = req.user;
-
-    if (!user) {
-      return res.status(401).json({
+     const { wishlistids } = req.body;
+if (!wishlistids || !Array.isArray(wishlistids)) {
+      return res.status(400).json({
         success: false,
-        message: "Unauthorized",
+        message: "wishlistids must be an array",
       });
     }
 
-    const wishList = await Wishlist.findOne({ user: user._id })
-    .populate({
-    path: "items",
-    select: "slug title sellingPrice compareAtPrice quantity images productfor",   // 👈 only these fields
-  })
+    // 🔹 Convert to ObjectId (important)
+    const objectIds = wishlistids.map(
+      (id) => new mongoose.Types.ObjectId(id)
+    );
+    
+
+      const wishList = await Product.find({
+      _id: { $in: objectIds },
+    }).select( "slug title sellingPrice compareAtPrice quantity images productfor")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
