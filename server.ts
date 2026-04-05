@@ -13,6 +13,7 @@ import addressRouter from "./routes/addressRoutes.ts"
 import orderRouter from "./routes/orderRoutes.ts"
 import ContactRouter from "./routes/contactRoutes.ts"
 import CouponcodeRoute from "./routes/couponCodeRoutes.ts"
+import BlogRoute from "./routes/blogRoutes.ts"
 
 
 import cors from "cors";
@@ -53,6 +54,7 @@ app.use("/api/v1/collection",collectionRouter)
 app.use("/api/v1/products",productRouter)
 app.use("/api/v1/contact",ContactRouter)
 app.use("/api/v1/couponcode",CouponcodeRoute)
+app.use("/api/v1/blog",BlogRoute)
 
 
 app.use("/api/v1/cart",cartRouter)

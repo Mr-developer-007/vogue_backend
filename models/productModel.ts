@@ -55,7 +55,7 @@ export interface IProduct extends Document {
 
   viewCount: number;
   orderCount: number;
-
+color:string;
 
 
 }
@@ -231,8 +231,12 @@ const productSchema = new Schema<IProduct>(
       min: 0,
     },
 
-
+ color:{
+    type:String,
+    default:"#000"
   },
+  },
+ 
   {
     timestamps: true,
   }

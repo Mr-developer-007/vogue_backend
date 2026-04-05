@@ -22,6 +22,7 @@ export const createProduct = async (req: Request, res: Response) => {
       isFeatured,
       isBestSeller,
       isNewArrival,
+      color,
     } = req.body;
 
     const alreadySku = await Product.findOne({ sku });
@@ -119,6 +120,7 @@ export const createProduct = async (req: Request, res: Response) => {
       seo,
       shipping,
       images,
+      color
     });
 
 
@@ -367,11 +369,12 @@ export const updateProduct = async ( req: Request, res: Response): Promise<Respo
       shortDescription: req.body.shortDescription as string,
       productfor: req.body.productfor as string,
       status: req.body.status as string,
+      color: req.body.color as string,
 
       isFeatured: req.body.isFeatured === "true",
       isBestSeller: req.body.isBestSeller === "true",
       isNewArrival: req.body.isNewArrival === "true",
-
+      
       specifications: parseJSON<Record<string, string>>(
         req.body.specifications,
         {}
@@ -407,7 +410,7 @@ export const updateProduct = async ( req: Request, res: Response): Promise<Respo
       product.images.push(...newImages);
     }
 
-    // 🔹 Apply updates
+ 
     Object.assign(product, updates);
     await product.save();
 

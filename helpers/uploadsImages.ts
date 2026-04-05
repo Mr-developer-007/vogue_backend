@@ -84,3 +84,29 @@ if(!fs.existsSync(CollectionPath)){
 
 
 export const uploadProduct = multer({ storage:productCollection })
+
+
+
+
+
+
+
+const Blog = multer.diskStorage({
+  destination: (req, file, cb) => {
+const CollectionPath = path.join(process.cwd(),"uploads","blog")
+if(!fs.existsSync(CollectionPath)){
+  fs.mkdirSync(CollectionPath)
+}
+    cb(null, "uploads/blog")  
+  },
+
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname)
+    const uniqueName = `${Date.now()}-${crypto.randomUUID()}${ext}`
+    cb(null, uniqueName)
+  },
+})
+
+
+export const uploadBlog = multer({ storage:Blog })
+

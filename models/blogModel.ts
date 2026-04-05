@@ -1,11 +1,23 @@
-import { Schema } from "mongoose";
+import { Document, model, Schema } from "mongoose";
 
 
+interface IBlog extends Document{
+    title:string,
+    slug:string,
+    image:string,
+    shortdes:string,
+    des:string,
+    type:string,
 
-const blogSchema = new Schema({
+
+}
+
+
+const blogSchema = new Schema<IBlog>({
     title:{type:String,
         required:true,
-        trim:true
+        trim:true,
+         unique:true
     },
 
   slug:{type:String,
@@ -25,8 +37,18 @@ const blogSchema = new Schema({
  des:{
      type:String,
         required:true,
+ },
+ type:{
+ type:String,
+        required:true,
  }
  
 
 
 })
+
+
+
+const Blog = model<IBlog>("blog",blogSchema)
+
+export default Blog
