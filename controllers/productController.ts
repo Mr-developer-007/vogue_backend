@@ -255,7 +255,7 @@ export const getProductByFeatured = async (req: Request, res: Response) => {
     const products = await Product.find({
       status: "active",
       [flag]: true,
-    }).sort({ createdAt: -1 }).limit(8).select(" categories title slug images sellingPrice compareAtPrice shortDescription productfor").populate("categories");
+    }).sort({ createdAt: -1 }).limit(8).select("color categories title slug images sellingPrice compareAtPrice shortDescription productfor").populate("categories");
 
     return res.status(200).json({
       success: true,
