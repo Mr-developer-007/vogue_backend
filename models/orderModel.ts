@@ -80,7 +80,7 @@ const orderSchema = new Schema<IOrder>({
         default :null
      }
 },{
-    timestamps:true
+    timestamps:true 
 })
 
 const Order = model<IOrder>("order",orderSchema)

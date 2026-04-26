@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
 import Address from "../models/addressModel.ts";
+import axios from "axios";
+import { generateToken } from "./ShprocketIntergation/AuthShipRocket.ts";
 
 interface AuthRequest extends Request {
     user: any
@@ -19,7 +21,32 @@ export const createAddress = async (req: AuthRequest, res: Response) => {
             });
         }
 
+const token = await  generateToken();
 
+const shiprocketRes = await axios.get(
+    `https://apiv2.shiprocket.in/v1/external/courier/serviceability`,
+    {
+      params: {
+        pickup_postcode: "160011", 
+        delivery_postcode: zipCode,
+        weight: 2,
+        cod: 0,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+    const couriers = shiprocketRes?.data?.data?.available_courier_companies || [];
+
+
+if(couriers.length === 0 ){
+  return res.status(400).json({
+        success: false,
+        message: "Delivery not available on this pincode",
+      });
+
+}
         const existingAddress = await Address.findOne({ user: user._id });
 
 
@@ -193,3 +220,4 @@ export const setDefault= async(req: AuthRequest, res: Response)=>{
     });
     }
 }
+

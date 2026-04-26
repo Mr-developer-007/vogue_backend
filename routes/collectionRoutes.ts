@@ -1,7 +1,7 @@
 // uploadCollection
 import express from "express"
 import { verifyAdmin } from "../middlewere/verifyMiddlewere.ts"
-import { AddProduct, createCollection, deleteCollection, getColl, getCollections, getSingleCollection, removeProduct, toggleCollection, upDateCollaction } from "../controllers/collectionController.ts"
+import { AddProduct, createCollection, deleteCollection, getColl, getCollections, getSingleCollection, getSlugProduct, removeProduct, toggleCollection, upDateCollaction } from "../controllers/collectionController.ts"
 import { uploadCollection } from "../helpers/uploadsImages.ts"
 
 const route = express.Router()
@@ -13,8 +13,10 @@ route.patch("/toggle-status/:id",verifyAdmin,toggleCollection)
 route.get("/getcollection",getColl)
 route.get("/getsinglecoll/:id",getSingleCollection)
 route.delete("/delete/:id",verifyAdmin,deleteCollection)
-route.put("/addProduct/:id",AddProduct);
-route.put("/removeProduct/:id",removeProduct);
+route.put("/addProduct/:id",verifyAdmin,AddProduct);
+route.put("/removeProduct/:id",verifyAdmin,removeProduct);
 
+route.get("/product/:slug",getSlugProduct)
+// getSlugProduct
 
 export default route

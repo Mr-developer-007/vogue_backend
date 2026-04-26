@@ -14,6 +14,7 @@ import orderRouter from "./routes/orderRoutes.ts"
 import ContactRouter from "./routes/contactRoutes.ts"
 import CouponcodeRoute from "./routes/couponCodeRoutes.ts"
 import BlogRoute from "./routes/blogRoutes.ts"
+import ShipmentRoute from "./routes/Shiprocket.ts"
 
 
 import cors from "cors";
@@ -62,6 +63,7 @@ app.use("/api/v1/wishlist",wishListRouter)
 app.use("/api/v1/address",addressRouter)
 app.use("/api/v1/order",orderRouter)
 
+app.use("/api/v1/shipment",ShipmentRoute)
 
 
 

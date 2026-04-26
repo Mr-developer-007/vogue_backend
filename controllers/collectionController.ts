@@ -281,3 +281,34 @@ collection.products=alreadyExists
   }
 }
 
+
+
+export const getSlugProduct=async(req:Request,res:Response)=>{
+  try {
+    const slug =  req.params.slug;
+
+const collection = await Collection.findOne({slug}).populate("Product");
+
+    if (!collection) {
+      return res.status(404).json({
+        success: false,
+        message: "Collection not found",
+      });
+    }
+
+
+      return res.status(200).json({
+      success: true,
+      data: collection,
+    });
+
+    
+
+  } catch (error : any) {
+      return res.status(500).json({
+      success: false,
+      message: error.message || "Server Error",
+    });
+  }
+}
+

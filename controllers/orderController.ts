@@ -5,6 +5,7 @@ import Razorpay from "razorpay"
 import Order from "../models/orderModel.ts";
 import crypto from "crypto"
 import dotenv from "dotenv"
+import { generateToken } from "./ShprocketIntergation/AuthShipRocket.ts";
 dotenv.config()
 
  const razorpay = new Razorpay({
@@ -73,6 +74,9 @@ export const verifyPayment = async (req:AuthRequest,res:Response) => {
       orderStatus: "confirmed",
     });
 
+
+    const token = await generateToken()
+console.log(token)
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ message: "Verification failed" });
