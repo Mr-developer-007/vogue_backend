@@ -287,7 +287,7 @@ export const getSlugProduct=async(req:Request,res:Response)=>{
   try {
     const slug =  req.params.slug;
 
-const collection = await Collection.findOne({slug}).populate("Product");
+const collection = await Collection.findOne({slug}).populate([{path:"products",select:"color categories title slug images sellingPrice compareAtPrice shortDescription productfor"}]);;
 
     if (!collection) {
       return res.status(404).json({

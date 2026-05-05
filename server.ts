@@ -21,6 +21,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser"
 import path from "path";
 import { connectRedis } from "./helpers/redisConfig.ts";
+import Product from "./models/productModel.ts";
 dotenv.config()
 
 
@@ -67,6 +68,52 @@ app.use("/api/v1/shipment",ShipmentRoute)
 
 
 
+
+
+
+
+
+
+
+app.get("/product-feed.xml", async (req, res) => {
+  try {
+    const products = await Product.find({ status: "active" });
+
+    const baseUrl = "https://thevoguewardrobe.com";
+
+    let xml = `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+<channel>
+<title>Vogue Wardrobe</title>
+<link>${baseUrl}</link>
+<description>Premium Fashion Collection</description>
+`;
+
+    products.forEach((product) => {
+      xml += `
+<item>
+  <g:id>${product._id}</g:id>
+  <g:title><![CDATA[${product.title}]]></g:title>
+  <g:description><![CDATA[${product.description || ""}]]></g:description>
+  <g:link>${baseUrl}/product/${product.slug}</g:link>
+  <g:image_link>${baseUrl}/${product.images?.[0]}</g:image_link>
+  <g:price>${product.sellingPrice} INR</g:price>
+  <g:brand>Vogue Wardrobe</g:brand>
+  <g:condition>new</g:condition>
+</item>`;
+    });
+
+    xml += `
+</channel>
+</rss>`;
+
+    res.set("Content-Type", "application/xml");
+    res.send(xml);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error generating feed");
+  }
+});
 
 
 

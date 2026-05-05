@@ -14,7 +14,7 @@ try {
 
   const order: any = await Order.findById(orderid)
       .populate("address user")
-      .populate("orderItems.product");
+      .populate(["orderItems.product"]);
    if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
@@ -28,10 +28,10 @@ try {
 
 
 
-  const orderPayload = {
+const orderPayload = {
   order_id: `ORDER_${Date.now()}`,
   order_date: new Date().toISOString().slice(0, 19).replace("T", " "),
-  pickup_location: "Primary", 
+  pickup_location: "Primary",
 
   billing_customer_name: address.firstName,
   billing_last_name: address.lastName,
@@ -39,34 +39,34 @@ try {
   billing_address_2: address.street2 || "",
   billing_city: address.city,
   billing_pincode: Number(address.zipCode),
-  billing_state: address.state,
+  billing_state: "Himachal Pradesh", // FIXED
   billing_country: "India",
   billing_email: user.email,
-  billing_phone: address.phoneNumber,
+  billing_phone: address.phoneNumber.replace(/^0+/, ""), // FIXED
 
   shipping_is_billing: true,
 
   order_items: order.orderItems.map((item: any) => ({
-    name: item.product.name,
-    sku: item.sku || item._id,
+    name: item.product.title,
+    sku: item._id.toString(), // FIXED
     units: item.quantity,
     selling_price: item.price,
-    discount: "",
-    tax: "",
-    hsn: item.hsn || 441122,
+    hsn: 441122,
   })),
-
-  payment_method:  "Prepaid",
-
+shipping_charges: 0,
+            giftwrap_charges: 0,
+            transaction_charges: 0,
+            total_discount: 0,
+  payment_method: "Prepaid",
   sub_total: order.totalPrice,
 
-  length,
-  breadth,
-  height,
-  weight,
+  length: Number(length),   
+  breadth: Number(breadth),
+  height: Number(height),
+  weight: Number(weight),
 };
 
-
+console.log(JSON.stringify(orderPayload, null, 2));
 
   const response = await axios.post(
       "https://apiv2.shiprocket.in/v1/external/orders/create/adhoc",
@@ -88,7 +88,7 @@ try {
     });
     
 } catch (error:any) {
-        console.error("Shiprocket Error:", error?.response?.data || error.message);
+        console.error("Shiprocket Error:", error);
 
     return res.status(500).json({
       success: false,

@@ -10,6 +10,7 @@ import Cart from "../models/cartModel.ts";
 import Order from "../models/orderModel.ts";
 import Wishlist from "../models/wishlistModel.ts";
 import mongoose from "mongoose";
+import {  redisClient } from "../helpers/redisConfig.ts";
 
 
 interface AuthRequest extends Request{
@@ -290,21 +291,12 @@ export const sendOtp= async (req:Request,res:Response)=>{
 
     const otp = Math.floor(100000 + Math.random() * 900000);
 
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
+     
+ await  redisClient.set(`otp:${email}`,otp.toString(),{
+  EX: 300,
+ })
 
-    const existingOtp = await Otp.findOne({ email });
-   if (existingOtp) {
-      existingOtp.otp = otp;
-      existingOtp.expiresAt = expiresAt;
-      await existingOtp.save();
-    }
-else {
-      await Otp.create({
-        email,
-        otp,
-        expiresAt,
-      });
-    }
+console.log(email,otp)
     
     await sendMail({ email, otp });
     return res.status(200).json({
@@ -318,7 +310,7 @@ else {
       message: "Failed to send OTP",
     });
   }
-}
+} 
 
 
 export const verifyOtp = async (req: Request, res: Response) => {
@@ -348,8 +340,9 @@ export const verifyOtp = async (req: Request, res: Response) => {
       });
     }
 
-    // Get OTP record
-    const getOtp = await Otp.findOne({ email });
+    
+const getOtp = await redisClient.get(`otp:${email}`)
+
     if (!getOtp) {
       return res.status(400).json({
         success: false,
@@ -358,17 +351,15 @@ export const verifyOtp = async (req: Request, res: Response) => {
     }
 
     // Compare OTP
-    if (String(getOtp.otp) !== String(otp)) {
+    if (String(getOtp) !== String(otp)) {
       return res.status(400).json({
         success: false,
         message: "Invalid OTP",
       });
     }
 
-    // Delete OTP after verification
-    await getOtp.deleteOne();
+   
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
