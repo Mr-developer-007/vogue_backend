@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
- 
+
 
 import userRouter from "./routes/userRoutes.ts"
 import categoryRouter from "./routes/categoryRoutes.ts"
@@ -29,7 +29,7 @@ dotenv.config()
 
 const app = express()
 app.use(cors({
-    origin:process.env.FRONTEND_URL,
+    origin:process.env.FRONTEND_URL?.split(","),
     methods: ["GET", "POST", "PUT", "DELETE","PATCH"],
     credentials:true
 }))
