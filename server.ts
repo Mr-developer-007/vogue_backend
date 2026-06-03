@@ -15,6 +15,7 @@ import ContactRouter from "./routes/contactRoutes.ts"
 import CouponcodeRoute from "./routes/couponCodeRoutes.ts"
 import BlogRoute from "./routes/blogRoutes.ts"
 import ShipmentRoute from "./routes/Shiprocket.ts"
+import VideoRoute from "./routes/videoRoutes.ts"
 
 
 import cors from "cors";
@@ -67,7 +68,7 @@ app.use("/api/v1/order",orderRouter)
 app.use("/api/v1/shipment",ShipmentRoute)
 
 
-
+app.use("/api/v1/video",VideoRoute)
 
 
 
