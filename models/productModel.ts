@@ -154,6 +154,7 @@ const productSchema = new Schema<IProduct>(
     },
 
 
+    thumbnail:{type:String},
     images: [String],
 
 

@@ -6,8 +6,12 @@ import Category from "../models/categoryModel.ts";
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const filesImage = (req.files as Express.Multer.File[]) || [];
-
+const files = req.files as {
+  [fieldname: string]: Express.Multer.File[];
+};
+const thumbnailFile = files?.thumbnail?.[0];
+const filesImage = files?.images || [];
+   
     const {
       title,
       sku,
@@ -32,6 +36,8 @@ export const createProduct = async (req: Request, res: Response) => {
         await Promise.all(
           filesImage.map((file) => deleteImage(file.path))
         );
+deleteImage(thumbnailFile.path)
+
       }
 
       return res.status(409).json({
@@ -112,7 +118,7 @@ export const createProduct = async (req: Request, res: Response) => {
       isFeatured: isFeatured === "true",
       isBestSeller: isBestSeller === "true",
       isNewArrival: isNewArrival === "true",
-
+     thumbnail:thumbnailFile.path,
       features,
       categories,
       tags,
@@ -146,13 +152,18 @@ export const createProduct = async (req: Request, res: Response) => {
   } catch (error: any) {
 
 
-    // fallback cleanup
-    const filesImage = (req.files as Express.Multer.File[]) || [];
+   const files = req.files as {
+  [fieldname: string]: Express.Multer.File[];
+};
+const thumbnailFile = files?.thumbnail?.[0];
+const filesImage = files?.images || [];
+
     if (filesImage.length > 0) {
       await Promise.all(
         filesImage.map((file) => deleteImage(file.path))
       );
     }
+    deleteImage(thumbnailFile.path)
 
     return res.status(500).json({
       success: false,
@@ -206,7 +217,7 @@ export const getProduct = async (req: Request, res: Response) => {
     const products = await Product.find(filter)
       .sort(sortOption)
       .skip(skip)
-      .limit(pageSize).select("title slug images sellingPrice compareAtPrice shortDescription productfor");
+      .limit(pageSize).select("title slug  sellingPrice thumbnail compareAtPrice shortDescription productfor");
 
     const totalProducts = await Product.countDocuments(filter);
 
@@ -255,7 +266,7 @@ export const getProductByFeatured = async (req: Request, res: Response) => {
     const products = await Product.find({
       status: "active",
       [flag]: true,
-    }).sort({ createdAt: -1 }).limit(8).select("color categories title slug images sellingPrice compareAtPrice shortDescription productfor").populate("categories");
+    }).sort({ createdAt: -1 }).limit(8).select("color categories title slug thumbnail sellingPrice compareAtPrice shortDescription productfor").populate("categories");
 
     return res.status(200).json({
       success: true,
@@ -401,14 +412,27 @@ export const updateProduct = async ( req: Request, res: Response): Promise<Respo
         (img: string) => !deleteImages.includes(img)
       );
     }
+    const files = req.files as {
+  [fieldname: string]: Express.Multer.File[];
+};
 
     // 🔹 Handle new images (multer)
-    if (req.files && Array.isArray(req.files)) {
-      const newImages = req.files.map(
-        (file: Express.Multer.File) => file.path
+    if (req.files && Array.isArray(files.images)) {
+      const newImages = files.images.map(
+        (file) => file.path
       );
       product.images.push(...newImages);
     }
+
+
+if(files.newthumbnail){
+  if(product.thumbnail){
+    await deleteImage(product.thumbnail)
+  }
+
+  product.thumbnail = files.newthumbnail[0].path;
+
+}
 
  
     Object.assign(product, updates);
@@ -472,6 +496,11 @@ try {
   for (let i = 0 ;i < product.images.length; i++){
     await deleteImage(product.images[i] )
   }
+
+if(product.thumbnail){
+ await deleteImage(product.thumbnail )
+
+}
 
   await product.deleteOne()
 

@@ -5,7 +5,17 @@ import { createProduct, deleteProduct, getProduct, getProductByFeatured, getSing
 const route = express.Router()
 
 
-route.post("/create",verifyAdmin,uploadProduct.array("images",10),createProduct)
+route.post("/create",verifyAdmin,uploadProduct.fields([
+{
+    name:"thumbnail",
+    maxCount:1
+},
+{
+    name:"images",
+    maxCount:10
+}
+
+]),createProduct)
 route.get("/get",getProduct)
 route.get("/get/:isFeatured",getProductByFeatured)
 route.get("/foredit/:slug",getSingleProductForEdit)
@@ -13,7 +23,14 @@ route.get("/search",searchProduct)
 
 
 route.get("/:slug",getSingleProduct)
-route.put("/update/:id",verifyAdmin,uploadProduct.array("images",10),updateProduct)
+route.put("/update/:id",verifyAdmin,uploadProduct.fields([{
+    name:"newthumbnail",
+    maxCount:1
+},
+{
+    name:"images",
+    maxCount:10
+}]),updateProduct)
 
 route.delete("/delete/:id",verifyAdmin,deleteProduct)
 
