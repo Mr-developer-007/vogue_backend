@@ -19,16 +19,18 @@ export const verifyUser = async (req: AuthRequest, res: Response, next: NextFunc
             return res.status(401).json({ message: "Unauthorized: No token" })
         }
         const tokenVal = jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload
+        
 
 
         const user = await User.findOne({ _id: tokenVal?.id as string, role: "user" }).select("-password")
+       
         if (!user) {
             return res.status(403).json({ message: "Access denied" })
         }
 
         req.user = user;
 
-        next()
+        next() 
 
 
     } catch (error) {
