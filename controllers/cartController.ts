@@ -90,7 +90,7 @@ export const getCartItem = async (req: AuthRequest, res: Response) => {
     const cart = await Cart.findOne({ user: user._id })
       .populate({
         path: "items.product",
-        select: "title sellingPrice images slug",
+        select: "title sellingPrice thumbnail slug",
       });
 
     if (!cart) {
