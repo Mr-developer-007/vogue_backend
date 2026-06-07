@@ -16,6 +16,7 @@ import CouponcodeRoute from "./routes/couponCodeRoutes.ts"
 import BlogRoute from "./routes/blogRoutes.ts"
 import ShipmentRoute from "./routes/Shiprocket.ts"
 import VideoRoute from "./routes/videoRoutes.ts"
+import reviewRoutes from "./routes/reviewRoutes.ts"
 
 
 import cors from "cors";
@@ -58,6 +59,8 @@ app.use("/api/v1/products",productRouter)
 app.use("/api/v1/contact",ContactRouter)
 app.use("/api/v1/couponcode",CouponcodeRoute)
 app.use("/api/v1/blog",BlogRoute)
+app.use("/api/v1/review",reviewRoutes)
+
 
 
 app.use("/api/v1/cart",cartRouter)

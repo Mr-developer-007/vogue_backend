@@ -1,5 +1,6 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import Blog from "../models/blogModel.ts";
+import { deleteImage } from "../helpers/deleteImags.ts";
 
 export const CreateBlog = async (req: Request, res: Response) => {
   try {
@@ -129,3 +130,33 @@ export const getSingleBlog = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const deleteBlog= async(req: Request, res: Response,next:NextFunction)=>{
+try {
+  const id= req.params.id;
+  const blog = await Blog.findById(id);
+
+if (!blog) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+
+    if (blog.image) {
+      await deleteImage(blog.image);
+    }
+
+    await blog.deleteOne();
+
+
+    return res.status(200).json({
+      success: true,
+      message: "Blog deleted successfully",
+    });
+
+  
+} catch (error) {
+   next(error);
+}
+}
